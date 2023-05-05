@@ -49,6 +49,7 @@ dependencies:
   json_annotation: ^4.8.0
   auto_route: ^6.4.0
   flutter_native_splash: ^2.2.19
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:

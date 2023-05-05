@@ -121,17 +121,15 @@ class MovieDataSource {
     }
   }
 
-  Future download1(Dio dio, String url, String savePath) async {
+  Future download1( String url, String savePath) async {
     try {
-      Response response = await dio.get(
+      Response response = await _dioClient.get(
         url,
         onReceiveProgress: showDownloadProgress,
         options: Options(
           responseType: ResponseType.bytes,
           followRedirects: false,
-          // validateStatus: (status) {
-          //   return status < 500;
-          // },
+        
         ),
       );
       print(response.headers);

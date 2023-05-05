@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movie_application/core/utils/hive_storage.dart';
 import 'package:flutter_movie_application/movies/data/models/movieDetailsModel.dart';
 
-// @RoutePage()
+@RoutePage()
 class BookMarkedScreen extends StatefulWidget {
   const BookMarkedScreen({super.key});
 

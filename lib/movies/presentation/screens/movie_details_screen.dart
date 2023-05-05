@@ -225,12 +225,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                 backgroundColor: Colors.green,
                                 minimumSize: const Size.fromHeight(48), // NEW
                               ),
-                              onPressed: () async{
-                                var tempDir = await getTemporaryDirectory();
-                                  String fullPath = tempDir.path + "/boo2.pdf'";
-                                  print('full path ${fullPath}');
+                              onPressed: () async {
+                                // var tempDir = await getTemporaryDirectory();
+                                //   String fullPath = tempDir.path + "/boo2.pdf'";
+                                //   print('full path ${fullPath}');
 
-                                  download1(dio, imgUrl, fullPath);
+                                //   download1(dio, imgUrl, fullPath);
                               },
                               child: const Text(
                                 'Download',
