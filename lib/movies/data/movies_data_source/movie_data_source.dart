@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movie_application/movies/data/models/movieDetailsModel.dart';
 import 'package:flutter_movie_application/movies/data/models/movieModel.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MovieDataSource {
   MovieDataSource(this._dioClient);
@@ -45,15 +46,6 @@ class MovieDataSource {
       print(" ${e.toString()}");
     }
     throw Exception('Server Error');
-    // final movieDetailResponse = await _dioClient.get(
-    //     'https://yts.mx/api/v2/movie_details.json?movie_id=$movieId&with_images=true&with_cast=true');
-
-    // if (movieDetailResponse.statusCode == 200) {
-    //   final movieJson = movieDetailResponse.data;
-    //   return MovieDetailsModel.fromJson(movieJson);
-    // } else {
-    //   throw Exception('Eoor');
-    // }
   }
 
   Future<MovieModel> searchMovies({required String query}) async {
@@ -121,31 +113,29 @@ class MovieDataSource {
     }
   }
 
-  Future download1( String url, String savePath) async {
-    try {
-      Response response = await _dioClient.get(
+  Future downloadFile(Dio dio, String url, String savePath) async {
+    var status = await Permission.manageExternalStorage.request();
+
+    if (status.isDenied) {
+      throw Exception('Access Denied');
+    }
+
+    if (status.isGranted) {
+      Response response = await dio.get(
+        // 'https://yts.mx/torrent/download/2A8C59FE0A76FDE07831FD1F348CAE8334C0A73B',
         url,
-        onReceiveProgress: showDownloadProgress,
         options: Options(
           responseType: ResponseType.bytes,
-          followRedirects: false,
-        
         ),
       );
-      print(response.headers);
-      File file = File(savePath);
-      var raf = file.openSync(mode: FileMode.write);
-      // response.data is List<int> type
-      raf.writeFromSync(response.data);
-      await raf.close();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void showDownloadProgress(received, total) {
-    if (total != -1) {
-      print((received / total * 100).toStringAsFixed(0) + "%");
+      if (response.statusCode == 200) {
+        File file = File(savePath);
+        var raf = file.openSync(mode: FileMode.write);
+        // response.data is List<int> type
+        raf.writeFromSync(response.data);
+        await raf.close();
+      }
+      throw 'Failed to download file';
     }
   }
 }

@@ -19,15 +19,16 @@ class HiveUtils {
     _ourDataBase?.put('singleMovie', encodedJsonString);
   }
 
-  /// DECODING=> String -> Object
-  // static fetchSingleMovie() {
-  //   final String storedMovieString = _ourDataBase?.get('singleMovie');
-  //   final Map<String, dynamic> decodedJson = jsonDecode(storedMovieString);
-
-  //   final MovieDetailsModel storedMovie =
-  //       MovieDetailsModel.fromJson(decodedJson);
-  //   // print("fetched movie ${storedMovie.title}");
-  // }
+  // / DECODING=> String -> Object
+  static fetchSingleMovie() {
+    final String storedMovieString = _ourDataBase?.get('singleMovie');
+    final Map<String, dynamic> decodedJson = jsonDecode(storedMovieString);
+    final data=decodedJson.length;
+    print(data);
+    final MovieDetailsModel storedMovie =
+        MovieDetailsModel.fromJson(decodedJson);
+    // print("fetched movie ${storedMovie.title}");
+  }
 
   // static storeMovies(List<MovieCardModel> movies) {
   //   _ourDataBase?.put('Movies', movies);

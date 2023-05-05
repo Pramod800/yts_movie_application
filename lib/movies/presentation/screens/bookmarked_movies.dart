@@ -12,12 +12,18 @@ class BookMarkedScreen extends StatefulWidget {
 }
 
 class _BookMarkedScreenState extends State<BookMarkedScreen> {
-  // late MovieDetailsModel movieDetailsModel;
+  late MovieDetailsModel movieDetailsModel;
 
-  // void _fetchStoredMovies() {
-  //   final data = HiveUtils.fetchMovies();
-  //   movieDetailsModel = MovieDetailsModel.from(data);
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _fetchStoredMovies();
+  }
+
+  void _fetchStoredMovies() {
+    final data = HiveUtils.fetchSingleMovie();
+    movieDetailsModel = MovieDetailsModel.fromJson(data);
+  }
 
   @override
   Widget build(BuildContext context) {

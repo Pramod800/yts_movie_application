@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+part 'movieDetailsModel.g.dart';
 
 @HiveType(typeId: 0)
 class MovieDetailsModel extends HiveObject {
@@ -13,7 +14,7 @@ class MovieDetailsModel extends HiveObject {
       MovieDetailsModel(
         data: Data.fromJson(json["data"]),
       );
-
+  
   Map<String, dynamic> toJson() => {
         "data": data.toJson(),
       };

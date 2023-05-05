@@ -1,9 +1,18 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_movie_application/movies/presentation/Bloc/movie_details_cubit/movie_details_cubit.dart';
+import 'package:flutter_movie_application/movies/presentation/screens/download_screen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 @RoutePage()
 class MovieDetailScreen extends StatefulWidget {
@@ -16,10 +25,55 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  //   var imageUrl =
+  //     "https://www.itl.cat/pngfile/big/10-100326_desktop-wallpaper-hd-full-screen-free-download-full.jpg";
+  // bool downloading = true;
+  // String downloadingStr = "No data";
+  // String savePath = "";
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   downloadFile();
+  // }
+
+  // Future downloadFile() async {
+  //   try {
+  //     Dio dio = Dio();
+
+  //     String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+
+  //     savePath = await getFilePath(fileName);
+  //     await dio.download(imageUrl, savePath, onReceiveProgress: (rec, total) {
+  //       setState(() {
+  //         downloading = true;
+  //         // download = (rec / total) * 100;
+  //         downloadingStr = "Downloading Image : $rec";
+  //       });
+  //     });
+  //     setState(() {
+  //       downloading = false;
+  //       downloadingStr = "Completed";
+  //     });
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
+
+  // Future<String> getFilePath(uniqueFileName) async {
+  //   String path = '';
+
+  //   Directory dir = await getApplicationDocumentsDirectory();
+
+  //   path = '${dir.path}/$uniqueFileName';
+
+  //   return path;
+  // }
   @override
   void initState() {
     context.read<MovieDetailsCubit>().getSingleMovie(movieId: widget.movieId);
     // movieDetail.getSingleMovie(movieId: widget.movieDetailModel);
+    // downloadFile();
 
     super.initState();
   }
@@ -225,12 +279,48 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                 backgroundColor: Colors.green,
                                 minimumSize: const Size.fromHeight(48), // NEW
                               ),
-                              onPressed: () async {
-                                // var tempDir = await getTemporaryDirectory();
-                                //   String fullPath = tempDir.path + "/boo2.pdf'";
-                                //   print('full path ${fullPath}');
 
-                                //   download1(dio, imgUrl, fullPath);
+                              // /data/user/0/com.example.flutter_movie_application/app_flutter/movies.torrent
+                              onPressed: () async {
+                                Map<Permission, PermissionStatus> statuses =
+                                    await [
+                                  Permission.storage,
+                                ].request();
+                                var box = Hive.box('download');
+
+                                if (statuses[Permission.storage]!.isGranted) {
+                                  var dir = await getExternalStorageDirectory();
+                                  if (dir != null) {
+                                    String fileName =
+                                        "${data.data.movie.title}.torrent";
+                                    var savePath = "${dir.path}/$fileName";
+                                    bool downloading = false;
+                                    try {
+                                      await Dio().download(
+                                          'https://yts.mx/torrent/download/2A8C59FE0A76FDE07831FD1F348CAE8334C0A73B',
+                                          options: Options(
+                                            responseType: ResponseType.bytes,
+                                            followRedirects: false,
+                                            // receiveTimeout: 0.0,
+                                          ),
+                                          savePath,
+                                          onReceiveProgress: (received, total) {
+                                        if (total != -1) {
+                                          print((received / total * 100)
+                                                  .toStringAsFixed(0) +
+                                              "%");
+                                          //you can build progressbar feature too
+                                        }
+                                      });
+                                      print(
+                                          "File is saved to download folder.");
+                                    } on DioError catch (e) {
+                                      print(e.message);
+                                    }
+                                  }
+                                } else {
+                                  print("No permission to read and write.");
+                                }
                               },
                               child: const Text(
                                 'Download',
